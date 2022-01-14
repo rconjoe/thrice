@@ -23,7 +23,7 @@ camera.position.setZ(30);
 renderer.render( scene, camera );
 
 const geometry = new THREE.TorusGeometry( 10, 3, 16, 100 );
-const material = new THREE.MeshStandardMaterial({ color: 0xFF6347 });
+const material = new THREE.MeshStandardMaterial({ color: 0xff6347 });
 const torus = new THREE.Mesh( geometry, material );
 
 scene.add(torus);
@@ -36,7 +36,7 @@ scene.add(pointLight, ambientLight);
 
 const lightHelper = new THREE.PointLightHelper(pointLight)
 const gridHelper = new THREE.GridHelper(200, 50)
-scene.add(lightHelper, gridHelper)
+// scene.add(lightHelper, gridHelper)
 
 const controls = new OrbitControls(camera, renderer.domElement)
 
@@ -54,6 +54,55 @@ function addStar() {
 
 Array(200).fill().forEach(addStar)
 
+const spaceTexture = new THREE.TextureLoader().load('space.jpeg');
+scene.background = spaceTexture;
+
+const joeTexture = new THREE.TextureLoader().load('me.png');
+
+const joe = new THREE.Mesh(
+  new THREE.BoxGeometry(3,3,3),
+  new THREE.MeshBasicMaterial({ map: joeTexture })
+);
+
+scene.add(joe)
+
+const moonTexture = new THREE.TextureLoader().load('moon.jpg');
+const normalTexture = new THREE.TextureLoader().load('normal.jpg');
+
+const moon = new THREE.Mesh(
+  new THREE.SphereGeometry(3, 32, 32),
+  new THREE.MeshStandardMaterial({
+    map: moonTexture,
+    normalMap: normalTexture
+  })
+);
+
+scene.add(moon)
+moon.position.z = 30;
+moon.position.x = -10;
+
+function moveCamera() {
+
+  // distance from top
+  const t = document.body.getBoundingClientRect().top;
+
+  // move moon
+  moon.rotation.x += 0.05;
+  moon.rotation.y += 0.075;
+  moon.rotation.z += 0.05;
+
+  // move me box
+  joe.rotation.y += 0.01;
+  joe.rotation.z += 0.01;
+
+  // top value above is always negative so multiply by negative number
+  camera.position.z = t * -0.01;
+  camera.position.x = t * -0.0002;
+  camera.rotation.y = t * -0.0002;
+
+}
+
+document.body.onscroll = moveCamera
 
 function animate() {
   requestAnimationFrame( animate )
